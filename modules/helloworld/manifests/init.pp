@@ -6,6 +6,11 @@ class helloworld {
     ensure => latest,
   }
 
+  package { 'npm':
+    ensure => latest,
+  }
+
+
 #Add the repo to get a newer nodejs
 apt::ppa { 'ppa:richarvey/nodejs': }
 
@@ -13,7 +18,7 @@ apt::ppa { 'ppa:richarvey/nodejs': }
   package { 'express':
     ensure   => present,
     provider => 'npm',
-    require => Class['nodejs'],
+    require => Package['npm'],
   }
 
 }
