@@ -26,7 +26,7 @@ class helloworld {
     ensure   => present,
     provider => 'npm',
 #    before => Apt::Ppa['ppa:richarvey/nodejs'],
-    require => [Package['npm'],Class['prepare']],
+    before => [Package['npm'],Class['prepare']],
   }
 
 ##create the /helloworld directory
