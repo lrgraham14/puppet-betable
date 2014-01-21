@@ -1,15 +1,7 @@
-#class prepare {
-#  class { 'apt': }
-#  apt::ppa { 'ppa:richarvey/nodejs': }
-#}
-
 class helloworld {
-#  include prepare
   include nodejs
 
 #Add the repo to get a newer nodejs
-#  apt::ppa { 'ppa:richarvey/nodejs': }
-
 exec { "add-apt-repository ppa:richarvey/nodejs && apt-get update":
     path => "/bin:/sbin:/usr/bin:/usr/sbin",
     alias => "nodejs_repository",
@@ -28,8 +20,6 @@ exec { "add-apt-repository ppa:richarvey/nodejs && apt-get update":
   package { 'express':
     ensure   => present,
     provider => 'npm',
-#    before => Apt::Ppa['ppa:richarvey/nodejs'],
-#    before => [Package['npm'],Class['prepare']],
     require => Exec['nodejs_repository'],
   }
 
@@ -56,7 +46,7 @@ exec { "add-apt-repository ppa:richarvey/nodejs && apt-get update":
     source => 'puppet:///modules/helloworld/helloworld.conf'
   }
 
-  #snsure the service is running
+  #ensure the service is running
   service { "helloworld":
     enable => true,
     ensure => running,
