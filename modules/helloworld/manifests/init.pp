@@ -22,7 +22,7 @@ class helloworld {
   }
 
 ##create the /helloworld directory
-  file { "/helloworld":
+  file { ["/helloworld","/helloworld/node_modules"]:
     ensure => "directory",
   }
   file { "/helloworld/helloworld.js":
@@ -34,8 +34,9 @@ class helloworld {
     source => 'puppet:///modules/helloworld/package.json'
   }
   file { '/helloworld/node_modules/express':
-     ensure => 'link',
-     target => '/usr/lib/node_modules/express',
+    ensure => 'link',
+    target => '/usr/lib/node_modules/express',
+    require => File["/helloworld/node_modules"],
   }
   # Add upstart for helloworld
   file { "/etc/init/helloworld.conf":
