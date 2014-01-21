@@ -1,16 +1,24 @@
+class prepare {
+  class { 'apt': }
+  apt::ppa { 'ppa:richarvey/nodejs': }
+}
+
 class helloworld {
+  include prepare
   include nodejs
 
 #Add the repo to get a newer nodejs
-  apt::ppa { 'ppa:richarvey/nodejs': }
+#  apt::ppa { 'ppa:richarvey/nodejs': }
 
 #Add the python-software-properties package to install ppa
   package { 'python-software-properties':
     ensure => latest,
+    before => Class['prepare'],
   }
 
   package { 'npm':
     ensure => latest,
+    before => Class['prepare'],
   }
 
 # Install nodejs and packages
@@ -18,7 +26,7 @@ class helloworld {
     ensure   => present,
     provider => 'npm',
 #    before => Apt::Ppa['ppa:richarvey/nodejs'],
-    require => Package['npm'],
+    require => [Package['npm'],Class['prepare']],
   }
 
 ##create the /helloworld directory
