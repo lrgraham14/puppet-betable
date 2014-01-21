@@ -17,7 +17,7 @@ class helloworld {
   package { 'express':
     ensure   => present,
     provider => 'npm',
-    before => Apt::Ppa['ppa:richarvey/nodejs'],
+#    before => Apt::Ppa['ppa:richarvey/nodejs'],
     require => Package['npm'],
   }
 
@@ -33,6 +33,10 @@ class helloworld {
     ensure => "present",
     source => 'puppet:///modules/helloworld/package.json'
   }
+  file { '/helloworld/node_modules/express':
+     ensure => 'link',
+     target => '/usr/lib/node_modules/express',
+  }
   # Add upstart for helloworld
   file { "/etc/init/helloworld.conf":
     ensure => "present",
@@ -43,6 +47,7 @@ class helloworld {
   service { "helloworld":
     enable => true,
     ensure => running,
+    require => File["/etc/init/helloworld.conf"],
   }
 
 }
