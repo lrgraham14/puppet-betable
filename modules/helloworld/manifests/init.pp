@@ -17,6 +17,7 @@ class helloworld {
   package { 'express':
     ensure   => present,
     provider => 'npm',
+    before => Apt::Ppa['ppa:richarvey/nodejs'],
     require => Package['npm'],
   }
 
