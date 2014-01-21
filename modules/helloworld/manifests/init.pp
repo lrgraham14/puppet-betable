@@ -1,24 +1,27 @@
-class prepare {
-  class { 'apt': }
-  apt::ppa { 'ppa:richarvey/nodejs': }
-}
+#class prepare {
+#  class { 'apt': }
+#  apt::ppa { 'ppa:richarvey/nodejs': }
+#}
 
 class helloworld {
-  include prepare
+#  include prepare
   include nodejs
 
 #Add the repo to get a newer nodejs
 #  apt::ppa { 'ppa:richarvey/nodejs': }
 
-#Add the python-software-properties package to install ppa
-  package { 'python-software-properties':
-    ensure => latest,
-    before => Class['prepare'],
-  }
+exec { "add-apt-repository ppa:richarvey/nodejs && apt-get update":
+    path => "/bin:/sbin:/usr/bin:/usr/sbin",
+    alias => "nodejs_repository",
+    require => Package["python-software-properties"],
+    creates => "/etc/apt/sources.list.d/richarvey-nodejs-precise.list",
+    subscribe => Package["python-software-properties"],
+}
 
-  package { 'npm':
+
+#Add the python-software-properties package to install ppa
+  package { ['python-software-properties','npm']:
     ensure => latest,
-    before => Class['prepare'],
   }
 
 # Install nodejs and packages
@@ -26,7 +29,8 @@ class helloworld {
     ensure   => present,
     provider => 'npm',
 #    before => Apt::Ppa['ppa:richarvey/nodejs'],
-    before => [Package['npm'],Class['prepare']],
+#    before => [Package['npm'],Class['prepare']],
+    require => Exec['nodejs_repository'],
   }
 
 ##create the /helloworld directory
