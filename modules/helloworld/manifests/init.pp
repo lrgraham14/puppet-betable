@@ -53,5 +53,26 @@ exec { "add-apt-repository ppa:richarvey/nodejs && apt-get update":
     require => File["/etc/init/helloworld.conf"],
   }
 
+  #Setup resolv.conf to point to google servers
+  file { "/etc/resolv.conf":
+    ensure => "present",
+    source => 'puppet:///modules/helloworld/resolv.conf'
+  }
+
+  #Setup firewall to allow port 80 and 22
+  firewall { '100 allow http acesss':
+    port   => 80,
+    proto  => tcp,
+    action => accept,
+  }
+  firewall { '101 allow ssh acesss':
+    port   => 22,
+    proto  => tcp,
+    action => accept,
+  }
+
+  firewall { "999 drop all other requests":
+    action => "drop",
+  }
 }
 
